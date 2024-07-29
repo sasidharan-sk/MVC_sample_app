@@ -63,32 +63,30 @@ public class EmployeeController : Controller
     [HttpPost]
     public async Task<IActionResult> Add(EmployeeViewModel model)
     {
+        byte[] pictureData = null;
 
-            byte[] pictureData = null;
-
-            if (model.PictureFile != null)
+        if (model.PictureFile != null)
+        {
+            using (var memoryStream = new MemoryStream())
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await model.PictureFile.CopyToAsync(memoryStream);
-                    pictureData = memoryStream.ToArray();
-                }
+                await model.PictureFile.CopyToAsync(memoryStream);
+                pictureData = memoryStream.ToArray();
             }
+        }
 
-            var parameters = new[]
-            {
-                new SqlParameter("@Name", model.Name),
-                new SqlParameter("@DateOfBirth", model.DateOfBirth),
-                new SqlParameter("@Email", model.Email),
-                new SqlParameter("@Picture", (object)pictureData ?? DBNull.Value)
-            };
+        var parameters = new[]
+        {
+            new SqlParameter("@Name", System.Data.SqlDbType.NVarChar) { Value = model.Name },
+            new SqlParameter("@DateOfBirth", System.Data.SqlDbType.Date) { Value = model.DateOfBirth },
+            new SqlParameter("@Email", System.Data.SqlDbType.NVarChar) { Value = model.Email },
+            new SqlParameter("@Picture", System.Data.SqlDbType.VarBinary) { Value = (object)pictureData ?? DBNull.Value }
+        };
 
-            await _context.Database.ExecuteSqlRawAsync("EXEC spAddEmployee @Name, @DateOfBirth, @Email, @Picture", parameters);
-            return RedirectToAction(nameof(Index));
-     
+        await _context.Database.ExecuteSqlRawAsync("EXEC spAddEmployee @Name, @DateOfBirth, @Email, @Picture", parameters);
+        return RedirectToAction(nameof(Index));
     }
 
-    // Edit an employee
+    // Edit an existing employee
     [HttpPost]
     public async Task<IActionResult> Edit(EmployeeViewModel model)
     {
@@ -103,36 +101,17 @@ public class EmployeeController : Controller
             }
         }
 
-        try
+        var parameters = new[]
         {
-            // Prepare SQL parameters with explicit types
-            var parameters = new[]
-            {
-            new SqlParameter("@ID", SqlDbType.Int) { Value = model.ID },
-            new SqlParameter("@Name", SqlDbType.NVarChar, 100) { Value = model.Name },
-            new SqlParameter("@DateOfBirth", SqlDbType.Date) { Value = model.DateOfBirth },
-            new SqlParameter("@Email", SqlDbType.NVarChar, 100) { Value = model.Email },
-            new SqlParameter("@Picture", SqlDbType.VarBinary, -1) { Value = (object)pictureData ?? DBNull.Value }
+            new SqlParameter("@ID", System.Data.SqlDbType.Int) { Value = model.ID },
+            new SqlParameter("@Name", System.Data.SqlDbType.NVarChar) { Value = model.Name },
+            new SqlParameter("@DateOfBirth", System.Data.SqlDbType.Date) { Value = model.DateOfBirth },
+            new SqlParameter("@Email", System.Data.SqlDbType.NVarChar) { Value = model.Email },
+            new SqlParameter("@Picture", System.Data.SqlDbType.VarBinary) { Value = (object)pictureData ?? DBNull.Value }
         };
 
-            // Execute stored procedure to update employee
-            await _context.Database.ExecuteSqlRawAsync("EXEC spUpdateEmployee @ID, @Name, @DateOfBirth, @Email, @Picture", parameters);
-
-            // Redirect to the Index action upon success
-            return RedirectToAction(nameof(Index));
-        }
-        catch (Exception ex)
-        {
-            // Log the exception (use a logger in a real application)
-            Console.WriteLine($"An error occurred: {ex.Message}");
-
-            // Optionally, add an error message to the ModelState and return to the Index view
-            // ModelState.AddModelError("", "An error occurred while updating the employee.");
-            // return View("Index", model);
-
-            // Redirect to the Index action (you may want to show an error page or message)
-            return RedirectToAction(nameof(Index));
-        }
+        await _context.Database.ExecuteSqlRawAsync("EXEC spUpdateEmployee @ID, @Name, @DateOfBirth, @Email, @Picture", parameters);
+        return RedirectToAction(nameof(Index));
     }
 
 
@@ -140,7 +119,13 @@ public class EmployeeController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(int id)
     {
-        await _context.Database.ExecuteSqlRawAsync("EXEC spDeleteEmployee @ID", new SqlParameter("@ID", id));
+        var parameters = new[]
+        {
+        new SqlParameter("@ID", id)
+    };
+
+        await _context.Database.ExecuteSqlRawAsync("EXEC spDeleteEmployee @ID", parameters);
         return RedirectToAction(nameof(Index));
     }
+
 }
