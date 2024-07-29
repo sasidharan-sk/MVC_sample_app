@@ -8,7 +8,7 @@ namespace MVC_sample_app.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-        public Microsoft.EntityFrameworkCore.DbSet<Employee> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
 
 }

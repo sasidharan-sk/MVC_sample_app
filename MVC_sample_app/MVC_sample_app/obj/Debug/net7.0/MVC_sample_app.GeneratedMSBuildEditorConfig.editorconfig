@@ -16,6 +16,10 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = G:\Github projects\MVC_sample_app\MVC_sample_app\MVC_sample_app
 build_property._RazorSourceGeneratorDebug = 
 
+[G:/Github projects/MVC_sample_app/MVC_sample_app/MVC_sample_app/Views/Employee/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [G:/Github projects/MVC_sample_app/MVC_sample_app/MVC_sample_app/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
