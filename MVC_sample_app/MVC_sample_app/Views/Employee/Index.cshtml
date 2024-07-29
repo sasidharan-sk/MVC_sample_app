@@ -4,7 +4,7 @@
     <h1 class="my-4">Employee Management</h1>
     <div class="row mb-3">
         <div class="col-md-6">
-            <form asp-action="Add" method="post" enctype="multipart/form-data" class="border p-3 rounded bg-light">
+            <form id="addEmployeeForm" asp-action="Add" method="post" enctype="multipart/form-data" class="border p-3 rounded bg-light">
                 <h3>Add Employee</h3>
                 <div class="form-group mb-3">
                     <label for="Name">Name</label>
@@ -13,14 +13,17 @@
                 <div class="form-group mb-3">
                     <label for="DateOfBirth">Date of Birth</label>
                     <input type="date" id="DateOfBirth" name="DateOfBirth" class="form-control" required />
+                    <div id="dobError" class="text-danger" style="display:none;">Date of Birth cannot be in the future.</div>
                 </div>
                 <div class="form-group mb-3">
                     <label for="Email">Email</label>
                     <input type="email" id="Email" name="Email" class="form-control" placeholder="Email" required />
+                    <div id="emailError" class="text-danger" style="display:none;">Invalid email format.</div>
                 </div>
                 <div class="form-group mb-3">
                     <label for="PictureFile">Picture</label>
                     <input type="file" id="PictureFile" name="PictureFile" class="form-control" />
+                    <div id="fileError" class="text-danger" style="display:none;">Only .jpg, .jpeg, .png files are allowed.</div>
                 </div>
                 <button type="submit" class="btn btn-primary">Add</button>
             </form>
@@ -32,6 +35,7 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Email</th>
                 <th>Photo</th>
                 <th>Actions</th>
             </tr>
@@ -43,6 +47,7 @@
                 {
                     <tr>
                         <td>@employee.Name</td>
+                        <td>@employee.Email</td>
                         <td>
                             @if (employee.Picture != null)
                             {
@@ -67,23 +72,27 @@
                     </tr>
                     <tr id="editForm-@employee.Email" style="display:none;">
                         <td colspan="3">
-                            <form asp-action="Edit" method="post" enctype="multipart/form-data" class="border p-3 rounded bg-light">
+                            <form id="addEmployeeForm" asp-action="Edit" method="post" enctype="multipart/form-data" class="border p-3 rounded bg-light">
                                 <input type="hidden" name="ID" value="@employee.ID" />
                                 <div class="form-group mb-3">
                                     <label for="Name">Name</label>
                                     <input type="text" name="Name" value="@employee.Name" class="form-control" required />
+
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="DateOfBirth">Date of Birth</label>
-                                    <input type="date" name="DateOfBirth" value="@employee.DateOfBirth.ToString("yyyy-MM-dd")" class="form-control" required />
+                                    <input type="date" id="DateOfBirth" name="DateOfBirth" value="@employee.DateOfBirth.ToString("yyyy-MM-dd")" class="form-control" required />
+                                    <div id="dobError" class="text-danger" style="display:none;">Date of Birth cannot be in the future.</div>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="Email">Email</label>
-                                    <input type="email" name="Email" value="@employee.Email" class="form-control" required />
+                                    <input type="email" id="Email" name="Email" value="@employee.Email" class="form-control" required />
+                                    <div id="emailError" class="text-danger" style="display:none;">Invalid email format.</div>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="PictureFile">Picture</label>
-                                    <input type="file" name="PictureFile" class="form-control" />
+                                    <input type="file" id="PictureFile" name="PictureFile" class="form-control" />
+                                    <div id="fileError" class="text-danger" style="display:none;">Only .jpg, .jpeg, .png files are allowed.</div>
                                 </div>
                                 <button type="submit" class="btn btn-success">Update</button>
                                 <button type="button" class="btn btn-secondary" onclick="hideEditForm('@employee.Email')">Cancel</button>
@@ -102,12 +111,4 @@
     </table>
 </div>
 
-<script>
-    function showEditForm(email) {
-        document.getElementById('editForm-' + email).style.display = 'table-row';
-    }
-
-    function hideEditForm(email) {
-        document.getElementById('editForm-' + email).style.display = 'none';
-    }
-</script>
+<script src="~/js/Validate.js"></script>
